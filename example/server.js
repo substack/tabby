@@ -28,7 +28,7 @@ tabby.add('/cats', {
 });
 
 tabby.add('/cats/:name', {
-    title: function (params) { return 'cats / ' + params.name },
+    title: function (params) { return params.name },
     data: require('./data/cat_full.js')(db),
     render: require('./render/cat_full.js')
 });

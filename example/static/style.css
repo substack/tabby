@@ -1,6 +1,36 @@
+#header {
+  background-color: rgb(63,63,191);
+}
+
+#section {
+  min-width: 140px;
+  text-align: center;
+  display: inline-block;
+  font-size: 2em;
+  margin-left: 10px;
+  color: rgb(191,191,223);
+}
+
+#tabs {
+  display: inline-block;
+  padding: 0px;
+  margin-left: 15px;
+}
+
 #tabs li {
   cursor: pointer;
-  color: rgb(0,0,255);
+  display: inline-block;
+  width: 100px;
+  background-color: rgb(95,95,223);
+  padding: 10px;
+  text-align: center;
+  font-size: 1.5em;
+  margin-right: 5px;
+}
+
+#tabs a:link, #tabs a:visited {
+  color: rgb(223,233,255);
+  text-decoration: none;
 }
 
 #tabs li:hover {
@@ -8,6 +38,7 @@
 }
 
 #content {
-  padding: 10px;
-  border: 4px solid rgb(191,191,191);
+  padding: 20px;
+  border: 4px solid rgb(191,191,223);
+  border-top-width: 0px;
 }
