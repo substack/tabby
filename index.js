@@ -45,8 +45,9 @@ Tabby.prototype.add = function (pattern, params) {
         params.pattern = pattern;
     }
     params.data = (function (dataFn) {
+        if (!dataFn) return null;
         return function (params) {
-            var st = dataFn && dataFn(params, function (err, res) {
+            var st = dataFn(params, function (err, res) {
                 if (err) return st.emit('error', err);
                 st.queue(res);
                 st.queue(null);
@@ -105,6 +106,11 @@ Tabby.prototype.handle = function (req, res) {
     
     if (ext === '.json') {
         res.setHeader('content-type', 'application/json');
+        if (!route.data) {
+            res.statusCode = 404;
+            res.end('no data for this route\n');
+            return;
+        }
         route.data(params).pipe(through(function (row) {
             if (typeof row === 'string' || Buffer.isBuffer(row)) {
                 this.queue(row);
@@ -117,13 +123,19 @@ Tabby.prototype.handle = function (req, res) {
     }
     else if (ext === '.html') {
         res.setHeader('content-type', 'text/html');
-        route.data(params).pipe(route.render(params)).pipe(res);
+        if (route.data) {
+            route.data(params).pipe(route.render(params)).pipe(res);
+        }
+        else route.render(params).pipe(res);
     }
     else {
         res.setHeader('content-type', 'text/html');
         var st = this._containerFn(route, params);
         if (!st) st = res;
         else st.pipe(res);
-        route.data(params).pipe(route.render(params)).pipe(st);
+        if (route.data) {
+            route.data(params).pipe(route.render(params)).pipe(st);
+        }
+        else route.render(params).pipe(st);
     }
 };
