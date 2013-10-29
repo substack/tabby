@@ -1,13 +1,16 @@
 var quotemeta = require('quotemeta');
+var through = require('through');
+var url = require('url');
+var qs = require('querystring');
 
 module.exports = Tabby;
 
 function Tabby (containerFn) {
-    if (!(this instanceof Tabby)) return new Tabby;
+    if (!(this instanceof Tabby)) return new Tabby(containerFn);
     this._routes = [];
     this._groups = [];
     this._regexp = { test: function () { return false } };
-    this._containerFn = containerFn;
+    this._containerFn = containerFn || function () {};
 }
 
 Tabby.prototype._recreateRegexp = function () {
@@ -28,7 +31,10 @@ Tabby.prototype._recreateRegexp = function () {
         
         return pattern;
     });
-    self._regexp = RegExp('^(?:' + parts.join('|') + ')(\.json)?(?:[/?]|$)');
+    self._regexp = RegExp(
+        '^(?:' + parts.join('|') + ')'
+        + '(\.(?:json|html))?(?:[/?]|$)'
+    );
 };
 
 Tabby.prototype.add = function (pattern, params) {
@@ -80,9 +86,32 @@ Tabby.prototype.handle = function (req, res) {
         return;
     }
     
-    var isJSON = Boolean(m[m.length - 1]);
-    //route.render(vars).pipe();
-    console.log(route, vars, isJSON);
+    var ext = m[m.length - 1];
+    var params = qs.parse((url.parse(req.url).search || '').replace(/^\?/, ''));
+    Object.keys(vars).forEach(function (key) {
+        params[key] = vars[key];
+    });
     
-    res.end('TODO!\n');
+    if (ext === '.json') {
+        res.setHeader('content-type', 'application/json');
+        route.data(params).pipe(through(function (row) {
+            if (typeof row === 'string' || Buffer.isBuffer(row)) {
+                this.queue(row);
+            }
+            else {
+                this.queue(JSON.stringify(row) + '\n');
+            }
+        })).pipe(res);
+    }
+    else if (ext === '.html') {
+        res.setHeader('content-type', 'text/html');
+        route.data(params).pipe(route.render(params)).pipe(res);
+    }
+    else {
+        res.setHeader('content-type', 'text/html');
+        var st = this._containerFn(route, params);
+        if (!st) st = res;
+        else st.pipe(res);
+        route.data(params).pipe(route.render(params)).pipe(st);
+    }
 };

@@ -9,10 +9,10 @@ var db = sub(require('level')(__dirname + '/test.db', { encoding: 'json' }));
 
 db.batch(require('./data.json'));
 
-var tabby = require('../')(function (page) {
+var tabby = require('../')(function (route) {
     var tr = trumpet();
     return duplexer(
-        tr.createStream('#content'),
+        tr.createWriteStream('#content'),
         readStream('index.html').pipe(tr)
     );
 });
