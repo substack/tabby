@@ -126,6 +126,7 @@ Tabby.prototype.handle = function (req, res) {
     }
     else if (ext === '.html') {
         res.setHeader('content-type', 'text/html');
+        params.live = false;
         if (route.data) {
             route.data(params).pipe(route.render(params)).pipe(res);
         }
@@ -149,6 +150,7 @@ Tabby.prototype.handle = function (req, res) {
             this.queue(null);
         })).pipe(hs);
         
+        params.live = false;
         var st = this._containerFn(route, params);
         if (!st) st = through();
         
