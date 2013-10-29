@@ -1,6 +1,7 @@
 # tabby
 
-create a tabbed interface for web pages on top of level-assoc
+create a tabbed, lazy-loaded interface for building web pages with progressive
+enhancement
 
 # example
 

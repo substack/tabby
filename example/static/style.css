@@ -1,0 +1,13 @@
+#tabs li {
+  cursor: pointer;
+  color: rgb(0,0,255);
+}
+
+#tabs li:hover {
+  color: rgb(127,127,255);
+}
+
+#content {
+  padding: 10px;
+  border: 4px solid rgb(191,191,191);
+}

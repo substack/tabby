@@ -1,0 +1,35 @@
+[
+  { "type": "put", "key": "pet-dog-sparks", "value": {
+    "name": "Sparks", "owner": "owner-sarah-west"
+  } },
+  { "type": "put", "key": "pet-dog-capn-salty", "value": {
+    "name": "Cap'n Salty", "owner": "owner-sir-edmund-theodore-heathcliff-iv"
+  } },
+  { "type": "put", "key": "pet-cat-whiskers", "value": {
+    "name": "Whiskers", "owner": "Ryan Jenkins"
+  } },
+  { "type": "put", "key": "pet-cat-mr-biscuit", "value": {
+    "name": "Mr. Biscuit", "owner": "owner-sir-edmund-theodore-heathcliff-iv"
+  } },
+  { "type": "put", "key": "pet-dog-jingle", "value": {
+    "name": "Jingle", "owner": "owner-sarah-west"
+  } },
+  { "type": "put", "key": "pet-parrot-feathers", "value": {
+    "name": "Feathers", "owner": "owner-sir-edmund-theodore-heathcliff-iv"
+  } },
+  { "type": "put", "key": "pet-parrot-squacker", "value": {
+    "name": "Squacker", "owner": "Ryan Jenkins"
+  } },
+  { "type": "put", "key": "owner-ryan-jenkins", "value": {
+    "name": "Ryan Jenkins", 
+    "location": "Brooklyn"
+  } },
+  { "type": "put", "key": "owner-sir-edmund-theodore-heathcliff-iv", "value": {
+    "name": "Sir Edmund Theodore Heathcliff IV",
+    "location": "Newcastle"
+  } },
+  { "type": "put", "key": "owner-sarah-west", "value": {
+    "name": "Sarah West", 
+    "location": "Kansas"
+  } }
+]
