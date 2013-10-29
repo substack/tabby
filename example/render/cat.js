@@ -5,7 +5,9 @@ var html = fs.readFileSync(__dirname + '/cat.html', 'utf8');
 module.exports = function () {
     return hyperspace(html, function (row) {
         return {
-            '.name': row.name
+            '.name': row.name,
+            '.owner': row.owner,
+            '.location': row.location
         };
     });
 };

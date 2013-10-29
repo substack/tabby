@@ -9,47 +9,33 @@ var db = sub(require('level')(__dirname + '/test.db', { encoding: 'json' }));
 
 db.batch(require('./data.json'));
 
-var tabby = require('../')(function (route) {
+var tabby = require('../')(function (route, params) {
     var tr = trumpet();
+    var title = typeof route.title === 'function' ? title(params) : title;
+    //tr.createWriteStream('#section').end(title);
+    
     return duplexer(
         tr.createWriteStream('#content'),
-        readStream('index.html').pipe(tr)
+        fs.createReadStream(__dirname + '/static/index.html').pipe(tr)
     );
 });
 
 tabby.add('/cats', {
-    data: function () {
-        return db.createReadStream({ start: 'pet-cat-', end: 'pet-cat-~' })
-    },
+    title: 'cats',
+    data: require('./data/cat.js')(db),
     render: require('./render/cat.js')
 });
 
 tabby.add('/cats/:name', {
-    data: function (params, cb) {
-        db.get('pet-cat-' + params.name, function (err, cat) {
-            if (err) return cb(err);
-            db.get(cat.owner, function (err, owner) {
-                if (err) return cb(err);
-                cat.owner = owner;
-                cb(null, cat);
-            });
-        });
-    },
+    title: function (params) { return 'cats:' + params.name },
+    data: require('./data/cat_full.js')(db),
     render: require('./render/cat_full.js')
 });
 
-tabby.add('/dogs', {
-    data: function () {
-        return db.createReadStream({ start: 'pet-dog-', end: 'pet-dog-~' })
-    },
-    render: require('./render/dog.js')
-});
-
-tabby.add('/parrots', {
-    data: function () {
-        return db.createReadStream({ start: 'pet-dog-', end: 'pet-dog-~' })
-    },
-    render: require('./render/dog.js')
+tabby.add('/owners', {
+    title: 'owners',
+    data: require('./data/owners.js')(db),
+    render: require('./render/owner.js')
 });
 
 var server = http.createServer(function (req, res) {
@@ -59,7 +45,3 @@ var server = http.createServer(function (req, res) {
     else ecstatic(req, res);
 });
 server.listen(5000);
-
-function readStream (p) {
-    return fs.createReadStream(__dirname + '/static/' + p);
-}
