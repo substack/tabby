@@ -46,7 +46,7 @@ Tabby.prototype.add = function (pattern, params) {
     }
     params.data = (function (dataFn) {
         return function (params) {
-            var st = dataFn(params, function (err, res) {
+            var st = dataFn && dataFn(params, function (err, res) {
                 if (err) return st.emit('error', err);
                 st.queue(res);
                 st.queue(null);

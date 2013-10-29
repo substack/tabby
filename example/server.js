@@ -21,6 +21,13 @@ var tabby = require('../')(function (route, params) {
     );
 });
 
+tabby.add('/', {
+    title: 'home',
+    render: function () {
+        return fs.createReadStream(__dirname + '/static/home.html');
+    }
+});
+
 tabby.add('/cats', {
     title: 'cats',
     data: require('./data/cat.js')(db),
