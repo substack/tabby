@@ -11,8 +11,9 @@ db.batch(require('./data.json'));
 
 var tabby = require('../')(function (route, params) {
     var tr = trumpet();
-    var title = typeof route.title === 'function' ? route.title(params) : title;
-    //tr.createWriteStream('#section').end(title);
+    var title = route.title;
+    if (typeof title === 'function') title = title(params);
+    tr.createWriteStream('#section').end(title);
     
     return duplexer(
         tr.createWriteStream('#content'),
@@ -27,7 +28,7 @@ tabby.add('/cats', {
 });
 
 tabby.add('/cats/:name', {
-    title: function (params) { return 'cats:' + params.name },
+    title: function (params) { return 'cats / ' + params.name },
     data: require('./data/cat_full.js')(db),
     render: require('./render/cat_full.js')
 });
