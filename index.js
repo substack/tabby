@@ -49,7 +49,7 @@ Tabby.prototype.add = function (pattern, route) {
     route.data = (function (dataFn) {
         if (!dataFn) return null;
         return function (params) {
-            var st = dataFn.call(route, params, route, function (err, res) {
+            var st = dataFn.call(route, params, function (err, res) {
                 if (err) return st.emit('error', err);
                 st.queue(res);
                 st.queue(null);
