@@ -62,19 +62,16 @@ Tabby.prototype.handle = function (req, res) {
     var vars = {};
     var route;
     
-console.log(this._groups);
-console.log(m);
-    for (var i = 1; i < this._groups.length; i++) {
+    for (var i = 0, j = 1; i < this._groups.length; i++) {
         var g = this._groups[i];
-        if (m[i] !== undefined) {
-console.log('g=', g);
+        if (m[j] !== undefined) {
             route = g.route;
-            for (var j = 0; j < g.groups.length; j++) {
-                vars[g.groups[j]] = m[i + j + 1];
+            for (var k = 0; k < g.groups.length; k++) {
+                vars[g.groups[k]] = m[j + k + 1];
             }
             break;
         }
-        i += g.groups.length;
+        j += 1 + g.groups.length;
     }
     if (!route) {
         res.statusCode = 404;
