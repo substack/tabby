@@ -1,0 +1,1 @@
+var tabby = require('../')('#content');

@@ -11,7 +11,11 @@ function Tabby (element) {
     if (!(this instanceof Tabby)) return new Tabby(element);
     var self = this;
     
+    if (typeof element === 'string') {
+        element = document.querySelector(element);
+    }
     self.element = element;
+    
     var meta = document.querySelector('meta[type=tabby-regex]');
     
     if (meta) {
@@ -38,7 +42,7 @@ Tabby.prototype._scan = function (elem) {
             link.addEventListener('click', function (ev) {
                 ev.preventDefault();
                 
-                self.show(u.pathname);
+                if (!self.show(u.pathname)) return;
                 window.history.pushState({ href: u.pathname }, '', u.pathname);
             });
         }
@@ -46,5 +50,29 @@ Tabby.prototype._scan = function (elem) {
 };
 
 Tabby.prototype.show = function (href) {
+    var self = this;
     console.log('TODO: serve ', href);
+    
+    var prevented = false;
+    self.emit('show', href, {
+        preventDefault: function () { prevented: true }
+    });
+    if (prevented) return false;
+    
+    get(href + '.html', function (err, body) {
+        if (err) location.href = href;
+        self.element.innerHTML = body;
+    });
+    return true;
 };
+
+function get (href, cb) {
+    var xhr = new XMLHttpRequest;
+    xhr.open('GET', href, true);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState !== 4) return;
+        if (xhr.error) cb(xhr.error)
+        else cb(null, xhr.responseText)
+    };
+    xhr.send();
+}

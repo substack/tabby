@@ -136,9 +136,9 @@ Tabby.prototype.handle = function (req, res) {
         var tr = trumpet();
         var hs = tr.createStream('head');
         hs.pipe(through(null, function () {
-            this.queue('<meta type="tabby-regex" value='
+            this.queue('<meta type="tabby-regex" value="'
                 + ent.encode(self._regexp.source)
-                + '>'
+                + '">'
             );
             this.queue(null);
         })).pipe(hs);
