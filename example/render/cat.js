@@ -6,11 +6,11 @@ module.exports = function () {
     return hyperspace(html, function (row) {
         return {
             '.name': {
-                href: '/cats/' + row.key.replace(/^cat-/, ''),
+                href: row.link,
                 _text: row.name
             },
             '.owner': {
-                href: '/owners/' + row.owner.key.replace(/^owner-/, ''),
+                href: row.owner.link,
                 _text: row.owner.name
             },
             '.location': row.location

@@ -7,7 +7,7 @@ module.exports = function () {
         return {
             '.name': row.name,
             '.owner': {
-                href: '/owners/' + row.owner.key.replace(/^owner-/, ''),
+                href: row.owner.link,
                 _text: row.owner.name
             }
         };

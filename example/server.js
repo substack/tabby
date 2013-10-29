@@ -35,7 +35,7 @@ tabby.add('/cats/:name', {
 
 tabby.add('/owners', {
     title: 'owners',
-    data: require('./data/owners.js')(db),
+    data: require('./data/owner.js')(db),
     render: require('./render/owner.js')
 });
 

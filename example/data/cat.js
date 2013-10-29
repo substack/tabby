@@ -12,10 +12,11 @@ module.exports = function (db) {
             if (err) return cb(err);
             row.value.owner = {
                 key: row.value.owner,
+                link: '/owners/' + row.value.owner.replace(/^owner-/, ''),
                 name: owner.name
             };
             row.value.location = owner.location;
-            row.value.key = row.key;
+            row.value.link = '/cats/' + row.key.replace(/^cat-/, '');
             cb(null, row.value);
         });
     }
