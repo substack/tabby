@@ -9,7 +9,10 @@ module.exports = function () {
                 href: '/cats/' + row.key.replace(/^cat-/, ''),
                 _text: row.name
             },
-            '.owner': row.owner,
+            '.owner': {
+                href: '/owners/' + row.owner.key.replace(/^owner-/, ''),
+                _text: row.owner.name
+            },
             '.location': row.location
         };
     });

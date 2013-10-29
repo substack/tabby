@@ -48,7 +48,7 @@ Tabby.prototype.add = function (pattern, params) {
         return function (params) {
             var st = dataFn(params, function (err, res) {
                 if (err) return st.emit('error', err);
-                st.queue(JSON.stringify(res) + '\n');
+                st.queue(res);
                 st.queue(null);
             });
             if (!st) st = through();
@@ -110,6 +110,7 @@ Tabby.prototype.handle = function (req, res) {
                 this.queue(row);
             }
             else {
+                // TODO: inline nested streams
                 this.queue(JSON.stringify(row) + '\n');
             }
         })).pipe(res);

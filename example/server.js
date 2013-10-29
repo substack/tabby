@@ -39,6 +39,12 @@ tabby.add('/owners', {
     render: require('./render/owner.js')
 });
 
+tabby.add('/owners/:name', {
+    title: function (params) { return params.name },
+    data: require('./data/owner_full.js')(db),
+    render: require('./render/owner_full.js')
+});
+
 var server = http.createServer(function (req, res) {
     if (tabby.test(req)) {
         tabby.handle(req, res);

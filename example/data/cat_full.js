@@ -4,6 +4,7 @@ module.exports = function (db) {
             if (err) return cb(err);
             db.get(cat.owner, function (err, owner) {
                 if (err) return cb(err);
+                owner.key = cat.owner;
                 cat.owner = owner;
                 cb(null, cat);
             });

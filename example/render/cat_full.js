@@ -6,7 +6,10 @@ module.exports = function () {
     return hyperspace(html, function (row) {
         return {
             '.name': row.name,
-            '.owner': row.owner.name
+            '.owner': {
+                href: '/owners/' + row.owner.key.replace(/^owner-/, ''),
+                _text: row.owner.name
+            }
         };
     });
 };
