@@ -5,6 +5,7 @@ module.exports = function (db) {
         return db.createReadStream({ start: 'owner-', end: 'owner-~' })
             .pipe(through(write))
         ;
+        
         function write (row) {
             row.value.link = '/owners/' + row.key.replace(/^owner-/, '');
             this.queue(row.value);

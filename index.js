@@ -39,17 +39,17 @@ Tabby.prototype._recreateRegexp = function () {
     );
 };
 
-Tabby.prototype.add = function (pattern, params) {
+Tabby.prototype.add = function (pattern, route) {
     if (pattern && typeof pattern === 'object') {
-        params = pattern;
+        route = pattern;
     }
     else {
-        params.pattern = pattern;
+        route.pattern = pattern;
     }
-    params.data = (function (dataFn) {
+    route.data = (function (dataFn) {
         if (!dataFn) return null;
         return function (params) {
-            var st = dataFn(params, function (err, res) {
+            var st = dataFn.call(route, params, route, function (err, res) {
                 if (err) return st.emit('error', err);
                 st.queue(res);
                 st.queue(null);
@@ -57,15 +57,15 @@ Tabby.prototype.add = function (pattern, params) {
             if (!st) st = through();
             return st;
         };
-    })(params.data);
+    })(route.data);
     
     for (var i = 0; i < this._routes.length; i++) {
-        if (this._routes[i].pattern.length < params.pattern.length) {
-            this._routes.splice(i, 0, params);
+        if (this._routes[i].pattern.length < route.pattern.length) {
+            this._routes.splice(i, 0, route);
             break;
         }
     }
-    if (i === this._routes.length) this._routes.push(params);
+    if (i === this._routes.length) this._routes.push(route);
     
     this._recreateRegexp();
 };
@@ -138,7 +138,13 @@ Tabby.prototype.handle = function (req, res) {
         hs.pipe(through(null, function () {
             this.queue('<meta type="tabby-regex" value="'
                 + ent.encode(self._regexp.source)
-                + '">'
+                + '">\n'
+            );
+            this.queue('<meta type="tabby-live" value="'
+                + JSON.stringify(self._routes.filter(function (x) {
+                    return x.live
+                }))
+                + '">\n'
             );
             this.queue(null);
         })).pipe(hs);
