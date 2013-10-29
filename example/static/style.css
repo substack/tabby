@@ -33,6 +33,10 @@
   text-decoration: none;
 }
 
+#tabs a:hover {
+  color: rgb(255,255,127);
+}
+
 #tabs li:hover {
   color: rgb(127,127,255);
 }
@@ -68,7 +72,6 @@
 .cat.full h1 {
   background-color: rgb(191,63,223);
 }
-
 
 .owner.summary h2 {
   background-color: rgb(223,127,63);
