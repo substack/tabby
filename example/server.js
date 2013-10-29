@@ -11,7 +11,7 @@ db.batch(require('./data.json'));
 
 var tabby = require('../')(function (route, params) {
     var tr = trumpet();
-    var title = typeof route.title === 'function' ? title(params) : title;
+    var title = typeof route.title === 'function' ? route.title(params) : title;
     //tr.createWriteStream('#section').end(title);
     
     return duplexer(

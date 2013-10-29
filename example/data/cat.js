@@ -12,6 +12,7 @@ module.exports = function (db) {
             if (err) return cb(err);
             row.value.owner = owner.name;
             row.value.location = owner.location;
+            row.value.key = row.key;
             cb(null, row.value);
         });
     }
