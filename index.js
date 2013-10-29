@@ -1,7 +1,9 @@
 var quotemeta = require('quotemeta');
 var through = require('through');
+var trumpet = require('trumpet');
 var url = require('url');
 var qs = require('querystring');
+var ent = require('ent');
 
 module.exports = Tabby;
 
@@ -33,7 +35,7 @@ Tabby.prototype._recreateRegexp = function () {
     });
     self._regexp = RegExp(
         '^(?:' + parts.join('|') + ')'
-        + '(\.(?:json|html))?(?:[/?]|$)'
+        + '(\.(?:json|html))?(?:[/?#]|$)'
     );
 };
 
@@ -77,6 +79,7 @@ Tabby.prototype.test = function (req) {
 };
 
 Tabby.prototype.handle = function (req, res) {
+    var self = this;
     var m = this._regexp.exec(req.url);
     var vars = {};
     var route;
@@ -130,12 +133,21 @@ Tabby.prototype.handle = function (req, res) {
     }
     else {
         res.setHeader('content-type', 'text/html');
+        var tr = trumpet();
+        var hs = tr.createStream('head');
+        hs.pipe(through(null, function () {
+            this.queue('<meta type="tabby-regex" value='
+                + ent.encode(self._regexp.source)
+                + '>'
+            );
+            this.queue(null);
+        })).pipe(hs);
+        
         var st = this._containerFn(route, params);
-        if (!st) st = res;
-        else st.pipe(res);
-        if (route.data) {
-            route.data(params).pipe(route.render(params)).pipe(st);
-        }
-        else route.render(params).pipe(st);
+        if (!st) st = through();
+        
+        var rx = route.render(params);
+        rx.pipe(st).pipe(tr).pipe(res);
+        if (route.data) route.data(params).pipe(rx);
     }
 };
