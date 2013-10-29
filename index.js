@@ -44,6 +44,17 @@ Tabby.prototype.add = function (pattern, params) {
     else {
         params.pattern = pattern;
     }
+    params.data = (function (dataFn) {
+        return function (params) {
+            var st = dataFn(params, function (err, res) {
+                if (err) return st.emit('error', err);
+                st.queue(JSON.stringify(res) + '\n');
+                st.queue(null);
+            });
+            if (!st) st = through();
+            return st;
+        };
+    })(params.data);
     
     for (var i = 0; i < this._routes.length; i++) {
         if (this._routes[i].pattern.length < params.pattern.length) {

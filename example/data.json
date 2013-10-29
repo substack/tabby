@@ -6,7 +6,7 @@
     "name": "Cap'n Salty", "owner": "owner-sir-edmund-theodore-heathcliff-iv"
   } },
   { "type": "put", "key": "pet-cat-whiskers", "value": {
-    "name": "Whiskers", "owner": "Ryan Jenkins"
+    "name": "Whiskers", "owner": "owner-ryan-jenkins"
   } },
   { "type": "put", "key": "pet-cat-mr-biscuit", "value": {
     "name": "Mr. Biscuit", "owner": "owner-sir-edmund-theodore-heathcliff-iv"
@@ -18,7 +18,7 @@
     "name": "Feathers", "owner": "owner-sir-edmund-theodore-heathcliff-iv"
   } },
   { "type": "put", "key": "pet-parrot-squacker", "value": {
-    "name": "Squacker", "owner": "Ryan Jenkins"
+    "name": "Squacker", "owner": "owner-ryan-jenkins"
   } },
   { "type": "put", "key": "owner-ryan-jenkins", "value": {
     "name": "Ryan Jenkins", 

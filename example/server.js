@@ -24,14 +24,14 @@ tabby.add('/cats', {
     render: require('./render/cat.js')
 });
 
-tabby.add('/cats/:cat', {
-    data: function (name, cb) {
-        db.get('pet-cat-' + name, function (err, cat) {
+tabby.add('/cats/:name', {
+    data: function (params, cb) {
+        db.get('pet-cat-' + params.name, function (err, cat) {
             if (err) return cb(err);
-            db.get(cat.value.owner, function (err, owner) {
+            db.get(cat.owner, function (err, owner) {
                 if (err) return cb(err);
-                cat.value.owner = owner;
-                cb(null, cat.value);
+                cat.owner = owner;
+                cb(null, cat);
             });
         });
     },
