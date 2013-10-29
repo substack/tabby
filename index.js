@@ -2,11 +2,12 @@ var quotemeta = require('quotemeta');
 
 module.exports = Tabby;
 
-function Tabby () {
+function Tabby (containerFn) {
     if (!(this instanceof Tabby)) return new Tabby;
     this._routes = [];
     this._groups = [];
     this._regexp = { test: function () { return false } };
+    this._containerFn = containerFn;
 }
 
 Tabby.prototype._recreateRegexp = function () {
@@ -27,7 +28,7 @@ Tabby.prototype._recreateRegexp = function () {
         
         return pattern;
     });
-    self._regexp = RegExp('^(?:' + parts.join('|') + ')(?:[/?]|$)');
+    self._regexp = RegExp('^(?:' + parts.join('|') + ')(\.json)?(?:[/?]|$)');
 };
 
 Tabby.prototype.add = function (pattern, params) {
@@ -78,7 +79,10 @@ Tabby.prototype.handle = function (req, res) {
         res.end('not found\n');
         return;
     }
-    console.log(route, vars);
+    
+    var isJSON = Boolean(m[m.length - 1]);
+    //route.render(vars).pipe();
+    console.log(route, vars, isJSON);
     
     res.end('TODO!\n');
 };
