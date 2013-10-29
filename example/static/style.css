@@ -42,3 +42,49 @@
   border: 4px solid rgb(191,191,223);
   border-top-width: 0px;
 }
+
+.summary h2, .full h1 {
+  padding: 5px;
+  padding-left: 10px;
+}
+
+.full h1 {
+  color: white;
+}
+
+.summary h2 a:link, .summary h2 a:visited {
+  color: white;
+  text-decoration: none;
+}
+
+.summary h2 a:hover {
+  color: rgb(255,255,127);
+}
+
+.cat.summary h2 {
+  background-color: rgb(191,63,223);
+}
+
+.cat.full h1 {
+  background-color: rgb(191,63,223);
+}
+
+
+.owner.summary h2 {
+  background-color: rgb(223,127,63);
+}
+
+.owner.full h1 {
+  background-color: rgb(223,127,63);
+}
+
+.label {
+  font-size: 2em;
+  color: white;
+  padding: 5px;
+  padding-left: 10px;
+}
+
+.owner .label {
+  background-color: rgb(223,127,63);
+}
