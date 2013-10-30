@@ -67,17 +67,36 @@ Tabby.prototype.show = function (href) {
     if (prevented) return false;
     
     if (self._write) {
-        self._write([ 'get', href ], function (err, stream) {
+        clearInterval(self._renderInterval);
+        
+        self._write([ 'get', href ], function (err, stream, seq) {
             if (err) location.href = href;
-            var body = '';
+            self._rendering = seq;
+            
+            var body = '', prev;
             self.element.innerHTML = body;
+            self._renderInterval = setInterval(function () {
+                if (self._rendering !== seq) return;
+                
+                if (prev !== body) {
+                    self.element.innerHTML = body;
+                    prev = body;
+                }
+                self.element.style.opacity = 1;
+            }, 1000);
             
             stream.on('data', function (buf) {
+                if (self._rendering !== seq) return;
                 body += buf;
-                self.element.innerHTML = body;
-                self.element.style.opacity = 1;
             });
             stream.on('end', function () {
+                if (self._rendering !== seq) return;
+                
+                clearInterval(self._renderInterval);
+                if (prev !== body) {
+                    self.element.innerHTML = body;
+                }
+                
                 self.emit('render', self.element);
                 self._scan(self.element);
                 self.element.style.opacity = 1;
@@ -104,7 +123,7 @@ Tabby.prototype.createStream = function () {
     this._write = function (row, cb) {
         tr.queue(JSON.stringify([ seq ].concat(row)) + '\n');
         streams[seq] = through();
-        cb(null, streams[seq]);
+        cb(null, streams[seq], seq);
         seq ++;
     };
     return stream;
