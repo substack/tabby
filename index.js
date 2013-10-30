@@ -172,8 +172,6 @@ Tabby.prototype.handle = function (req, res) {
 };
 
 Tabby.prototype.createStream = function () {
-    // NOT YET FULLY IMPLEMENTED
-    
     var self = this;
     var current = null;
     return combine(split(), through(write));
@@ -188,8 +186,19 @@ Tabby.prototype.createStream = function () {
         if (row[1] === 'get') {
             var m = self._match(row[2]);
             if (!m) return tr.queue(seq + ' 404\n');
-console.log(row, m);
-            // TODO
+            
+            var out = through(function (buf) {
+                var str = Buffer.isBuffer(buf) ? buf.toString('utf8') : buf;
+                tr.queue(JSON.stringify([ seq, str ]) + '\n');
+            }, end);
+            
+            function end () {
+                tr.queue(JSON.stringify([ seq ]) + '\n');
+            }
+            
+            var rx = m.route.render(m.params);
+            rx.pipe(out);
+            if (m.route.data) m.route.data(m.params).pipe(rx);
         }
     }
 };

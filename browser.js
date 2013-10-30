@@ -67,29 +67,44 @@ Tabby.prototype.show = function (href) {
     if (prevented) return false;
     
     if (self._write) {
-        self._write([ 'get', href ], onload);
+        self._write([ 'get', href ], function (err, stream) {
+            if (err) location.href = href;
+            var body = '';
+            self.element.innerHTML = body;
+            
+            stream.on('data', function (buf) {
+                body += buf;
+                self.element.innerHTML = body;
+                self.element.style.opacity = 1;
+            });
+            stream.on('end', function () {
+                self.emit('render', self.element);
+                self._scan(self.element);
+                self.element.style.opacity = 1;
+            });
+        });
     }
-    else get(href + '.html', onload);
-    
-    function onload (err, body) {
+    else get(href + '.html', function (err, body) {
         if (err) location.href = href;
         self.element.innerHTML = body;
         self.emit('render', self.element);
         self._scan(self.element);
         
         self.element.style.opacity = 1;
-    }
+    });
+    
     return true;
 };
 
 Tabby.prototype.createStream = function () {
     var tr = through(write);
     var stream = combine(split(), tr);
-    var cbs = {};
+    var streams = {};
     var seq = 0;
     this._write = function (row, cb) {
         tr.queue(JSON.stringify([ seq ].concat(row)) + '\n');
-        cbs[seq] = cb;
+        streams[seq] = through();
+        cb(null, streams[seq]);
         seq ++;
     };
     return stream;
@@ -98,9 +113,11 @@ Tabby.prototype.createStream = function () {
         try { var row = JSON.parse(line) }
         catch (err) { return }
         if (!Array.isArray(row)) return;
-        if (cbs[row[0]]) {
-            cbs[row[0]](row.slice(1));
-            delete cbs[row[0]];
+        if (streams[row[0]] && row[1]) {
+            streams[row[0]].queue(row[1]);
+        }
+        else if (streams[row[0]]) {
+            streams[row[0]].queue(null);
         }
     }
 };
