@@ -1,0 +1,8 @@
+{
+  "name": "tabby-example",
+  "version": "0.0.0",
+  "scripts": {
+    "watch": "watchify browser.js -o static/bundle.js -dv",
+    "start": "node server.js"
+  }
+}
