@@ -59,3 +59,8 @@ var server = http.createServer(function (req, res) {
     else ecstatic(req, res);
 });
 server.listen(5000);
+
+var sock = require('shoe')(function (stream) {
+    stream.pipe(tabby.createStream()).pipe(stream);
+});
+sock.install(server, '/sock');

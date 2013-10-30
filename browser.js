@@ -1,6 +1,9 @@
 var inherits = require('inherits');
 var EventEmitter = require('events').EventEmitter;
 var url = require('url');
+var through = require('through');
+var split = require('split');
+var combine = require('stream-combiner');
 
 var canPush = Boolean(window.history.pushState);
 
@@ -16,11 +19,15 @@ function Tabby (element) {
     }
     self.element = element;
     
-    var meta = document.querySelector('meta[type=tabby-regex]');
+    var mregex = document.querySelector('meta[type=tabby-regex]');
+    var mlive = document.querySelector('meta[type=tabby-live]');
     
-    if (meta) {
-        self._regex = RegExp(meta.getAttribute('value'));
+    if (mregex) {
+        self._regex = RegExp(mregex.getAttribute('value'));
         self._scan(document.body);
+    }
+    if (mlive) {
+        self._live = JSON.parse(mlive.getAttribute('value'));
     }
     if (canPush) window.addEventListener('popstate', function (ev) {
         if (ev.state && ev.state.href) {
@@ -49,12 +56,8 @@ Tabby.prototype._scan = function (elem) {
     })(links[i]);
 };
 
-Tabby.prototype.show = function (href, opts) {
+Tabby.prototype.show = function (href) {
     var self = this;
-    if (!opts) opts = {};
-    
-    var speed = opts.speed === undefined ? 500 : opts.speed
-    
     self.element.style.opacity = 0;
     
     var prevented = false;
@@ -63,15 +66,43 @@ Tabby.prototype.show = function (href, opts) {
     });
     if (prevented) return false;
     
-    get(href + '.html', function (err, body) {
+    if (self._write) {
+        self._write([ 'get', href ], onload);
+    }
+    else get(href + '.html', onload);
+    
+    function onload (err, body) {
         if (err) location.href = href;
-        self.element.style.opacity = 0;
         self.element.innerHTML = body;
+        self.emit('render', self.element);
         self._scan(self.element);
         
         self.element.style.opacity = 1;
-    });
+    }
     return true;
+};
+
+Tabby.prototype.createStream = function () {
+    var tr = through(write);
+    var stream = combine(split(), tr);
+    var cbs = {};
+    var seq = 0;
+    this._write = function (row, cb) {
+        tr.queue(JSON.stringify([ seq ].concat(row)) + '\n');
+        cbs[seq] = cb;
+        seq ++;
+    };
+    return stream;
+    
+    function write (line) {
+        try { var row = JSON.parse(line) }
+        catch (err) { return }
+        if (!Array.isArray(row)) return;
+        if (cbs[row[0]]) {
+            cbs[row[0]](row.slice(1));
+            delete cbs[row[0]];
+        }
+    }
 };
 
 function get (href, cb) {

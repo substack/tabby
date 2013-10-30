@@ -186,8 +186,9 @@ Tabby.prototype.createStream = function () {
         var seq = row[0];
         
         if (row[1] === 'get') {
-            var m = self.match(row[2]);
+            var m = self._match(row[2]);
             if (!m) return tr.queue(seq + ' 404\n');
+console.log(row, m);
             // TODO
         }
     }
