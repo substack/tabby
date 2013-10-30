@@ -5,6 +5,8 @@ module.exports = function (db) {
     return function (params) {
         var opts = { min: 'owner-', max: 'owner-~' };
         if (params.live) {
+            opts.old = params.old !== 'false';
+            opts.reverse = params.reverse !== 'false';
             return liveStream(db, opts).pipe(through(write));
         }
         else {

@@ -4,6 +4,8 @@ var trumpet = require('trumpet');
 var url = require('url');
 var qs = require('querystring');
 var ent = require('ent');
+var split = require('split');
+var combine = require('stream-combiner');
 
 module.exports = Tabby;
 
@@ -78,9 +80,8 @@ Tabby.prototype.test = function (req) {
     return this._regexp.test(req);
 };
 
-Tabby.prototype.handle = function (req, res) {
-    var self = this;
-    var m = this._regexp.exec(req.url);
+Tabby.prototype._match = function (href) {
+    var m = this._regexp.exec(href);
     var vars = {};
     var route;
     
@@ -95,13 +96,21 @@ Tabby.prototype.handle = function (req, res) {
         }
         j += 1 + g.groups.length;
     }
-    if (!route) {
+    if (!route) return undefined;
+    var ext = m[m.length - 1];
+    return { route: route, vars: vars, ext: ext };
+};
+
+Tabby.prototype.handle = function (req, res) {
+    var self = this;
+    var m = this._match(req.url);
+    if (!m) {
         res.statusCode = 404;
         res.end('not found\n');
         return;
     }
+    var route = m.route, vars = m.vars, ext = m.ext;
     
-    var ext = m[m.length - 1];
     var params = qs.parse((url.parse(req.url).search || '').replace(/^\?/, ''));
     Object.keys(vars).forEach(function (key) {
         params[key] = vars[key];
