@@ -98,7 +98,12 @@ Tabby.prototype._match = function (href) {
     }
     if (!route) return undefined;
     var ext = m[m.length - 1];
-    return { route: route, vars: vars, ext: ext };
+    
+    var params = qs.parse((url.parse(href).search || '').replace(/^\?/, ''));
+    Object.keys(vars).forEach(function (key) {
+        params[key] = vars[key];
+    });
+    return { route: route, vars: vars, ext: ext, params: params };
 };
 
 Tabby.prototype.handle = function (req, res) {
@@ -110,11 +115,8 @@ Tabby.prototype.handle = function (req, res) {
         return;
     }
     var route = m.route, vars = m.vars, ext = m.ext;
+    var params = m.params;
     
-    var params = qs.parse((url.parse(req.url).search || '').replace(/^\?/, ''));
-    Object.keys(vars).forEach(function (key) {
-        params[key] = vars[key];
-    });
     
     if (ext === '.json') {
         res.setHeader('content-type', 'application/json');
@@ -166,5 +168,27 @@ Tabby.prototype.handle = function (req, res) {
         var rx = route.render(params);
         rx.pipe(st).pipe(tr).pipe(res);
         if (route.data) route.data(params).pipe(rx);
+    }
+};
+
+Tabby.prototype.createStream = function () {
+    // NOT YET FULLY IMPLEMENTED
+    
+    var self = this;
+    var current = null;
+    return combine(split(), through(write));
+    
+    function write (line) {
+        var tr = this;
+        try { var row = JSON.parse(line) }
+        catch (err) { return }
+        if (!Array.isArray(row)) return;
+        var seq = row[0];
+        
+        if (row[1] === 'get') {
+            var m = self.match(row[2]);
+            if (!m) return tr.queue(seq + ' 404\n');
+            // TODO
+        }
     }
 };
