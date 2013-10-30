@@ -24,7 +24,7 @@ function Tabby (element) {
     }
     if (canPush) window.addEventListener('popstate', function (ev) {
         if (ev.state && ev.state.href) {
-            self.show(ev.state.href, { speed: 0 });
+            self.show(ev.state.href);
         }
     });
 }
@@ -55,11 +55,7 @@ Tabby.prototype.show = function (href, opts) {
     
     var speed = opts.speed === undefined ? 500 : opts.speed
     
-    clearInterval(self._animation);
-    if (speed) {
-        self._animation = fadeOut(self.element, speed);
-    }
-    else self.element.style.opacity = 0;
+    self.element.style.opacity = 0;
     
     var prevented = false;
     self.emit('show', href, {
@@ -73,11 +69,7 @@ Tabby.prototype.show = function (href, opts) {
         self.element.innerHTML = body;
         self._scan(self.element);
         
-        clearInterval(self._animation);
-        if (speed) {
-            self._animation = fadeIn(self.element, speed);
-        }
-        else self.element.style.opacity = 1;
+        self.element.style.opacity = 1;
     });
     return true;
 };
@@ -91,28 +83,4 @@ function get (href, cb) {
         else cb(null, xhr.responseText)
     };
     xhr.send();
-}
-
-function fadeOut (elem, speed) {
-    var opacity = parseInt(window.getComputedStyle(elem).opacity || '1');
-    
-    var iv = setInterval(function () {
-        opacity -= 1000 / speed / 10;
-        if (opacity <= 0) opacity = 0;
-        elem.style.opacity = opacity;
-        if (opacity === 0) clearInterval(iv);
-    }, 10);
-    return iv;
-}
-
-function fadeIn (elem, speed) {
-    var opacity = parseInt(window.getComputedStyle(elem).opacity || '1');
-    
-    var iv = setInterval(function () {
-        opacity += 1000 / speed / 10;
-        if (opacity >= 1) opacity = 1;
-        elem.style.opacity = opacity;
-        if (opacity === 1) clearInterval(iv);
-    }, 10);
-    return iv;
 }
