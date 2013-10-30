@@ -62,6 +62,7 @@ Tabby.prototype.show = function (href) {
     get(href + '.html', function (err, body) {
         if (err) location.href = href;
         self.element.innerHTML = body;
+        self._scan(self.element);
     });
     return true;
 };
