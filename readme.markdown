@@ -152,3 +152,76 @@ $ curl http://localhost:5000/owners.html
 If a stream hasn't been configured, tabby uses these routes to load content over
 xhr.
 
+# server methods
+
+``` js
+var tabby = require('tabby')
+```
+
+## var t = tabby(containerFn)
+
+## t.add(pattern, route)
+
+Add a `route` for paths matching `pattern`.
+
+All routes must have a `route.render` function that returns a stream.
+
+Routes can have a `route.data` function that will be piped into the render
+function if given.
+
+You can put whatever other properties you want onto the route object for use in
+other places in the code.
+
+## t.test(url)
+
+Return true if any of the patterns match for the pathname string `url`.
+
+## t.handle(req, res)
+
+Render all the pages that match for `t.test(req.url)`.
+
+## t.createStream()
+
+Create a realtime data channel to communicate directly with the server.
+
+# browser methods
+
+``` js
+var tabby = require('tabby')
+```
+
+## var t = tabby(target)
+
+Create a new tabby instance `t` bound to the element or query selector `target`.
+
+## t.createStream()
+
+Hook up a request channel directly to the server.
+
+Otherwise xhr is used to fetch content on demand.
+
+# browser events
+
+## t.on('show', function (href) {})
+
+This event fires when a new page has been requested.
+
+## t.on('render', function (elem) {})
+
+This event fires when a new page has been fully rendered.
+
+# todo
+
+* route.live for live-streaming results
+
+# install
+
+With [npm](https://npmjs.org) do:
+
+```
+npm install tabby
+```
+
+# license
+
+MIT
