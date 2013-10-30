@@ -1,7 +1,7 @@
 {
   "name": "tabby",
   "version": "0.0.0",
-  "description": "create a tabbed interface for web pages with progressive enhancement",
+  "description": "create tabbed web apps with progressive enhancement",
   "main": "index.js",
   "browser": "browser.js",
   "dependencies": {

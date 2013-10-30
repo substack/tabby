@@ -1,7 +1,8 @@
 # tabby
 
-build tabbed webapps that render html first and then upgrade to websockets and
-pushState where available
+create tabbed webapps with progressive enhancement
+
+render html first and then upgrade to websockets and pushState where available
 
 # example
 
