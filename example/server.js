@@ -30,26 +30,26 @@ tabby.add('/', {
 
 tabby.add('/cats', {
     title: 'cats',
-    data: require('./data/cat.js')(db),
-    render: require('./render/cat.js')
+    data: require('./tabs/cat-list/data.js')(db),
+    render: require('./tabs/cat-list/render.js')
 });
 
 tabby.add('/cats/:name', {
     title: function (params) { return params.name },
-    data: require('./data/cat_full.js')(db),
-    render: require('./render/cat_full.js')
+    data: require('./tabs/cat/data.js')(db),
+    render: require('./tabs/cat/render.js')
 });
 
 tabby.add('/owners', {
     title: 'owners',
-    data: require('./data/owner.js')(db),
-    render: require('./render/owner.js')
+    data: require('./tabs/owner-list/data.js')(db),
+    render: require('./tabs/owner-list/render.js')
 });
 
 tabby.add('/owners/:name', {
     title: function (params) { return params.name },
-    data: require('./data/owner_full.js')(db),
-    render: require('./render/owner_full.js')
+    data: require('./tabs/owner/data.js')(db),
+    render: require('./tabs/owner/render.js')
 });
 
 var server = http.createServer(function (req, res) {

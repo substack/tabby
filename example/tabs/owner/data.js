@@ -1,8 +1,8 @@
 var through = require('through');
-var catData = require('./cat.js');
+var catList = require('../cat-list/data.js');
 
 module.exports = function (db) {
-    var cats = catData(db);
+    var cats = catList(db);
     
     return function (params, cb) {
         var key = 'owner-' + params.name;
