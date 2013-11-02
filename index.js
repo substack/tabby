@@ -61,30 +61,25 @@ Tabby.prototype.add = function (pattern, route) {
         };
     })(route.data);
     
-    var parts = pattern.split('/');
+    var parts = pattern.split('/').slice(1);
     
     (function (routes) {
         for (var i = 0; i < routes.length; i++) {
-            var rparts = routes[i].pattern.split('/');
+            var rparts = routes[i].pattern.split('/').slice(1);
             
             for (var j = 0; j < parts.length; j++) {
                 var a = /:[\w-]+/.test(parts[j]);
                 var b = /:[\w-]+/.test(rparts[j]);
                 
                 if (!a && b) {
-                    routes.splice(i, 0, route);
-                    return;
+                    return routes.splice(i, 0, route);
                 }
                 if (!a && !b
                 && (!rparts[j] || parts[j].length < rparts[j].length)) {
-                    routes.splice(i, 0, route);
-                    return;
+                    return routes.splice(i, 0, route);
                 }
-                if (a && b) {
-                    if (parts.length > rparts.length) {
-                        routes.splice(i, 0, route);
-                        return;
-                    }
+                if (a && rparts[j] === undefined) {
+                    return routes.splice(i, 0, route);
                 }
             }
         }
