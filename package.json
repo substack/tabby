@@ -13,6 +13,12 @@
     "through": "~2.3.4",
     "trumpet": "~1.6.2"
   },
+  "devDependencies": {
+    "tape": "~2.1.0"
+  },
+  "scripts": {
+    "test": "tape test/*.js"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/substack/tabby.git"
