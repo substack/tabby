@@ -187,35 +187,3 @@ Tabby.prototype.handle = function (req, res) {
         if (route.data) route.data(params).pipe(rx);
     }
 };
-
-Tabby.prototype.createStream = function () {
-    var self = this;
-    var current = null;
-    return combine(split(), through(write));
-    
-    function write (line) {
-        var tr = this;
-        try { var row = JSON.parse(line) }
-        catch (err) { return }
-        if (!Array.isArray(row)) return;
-        var seq = row[0];
-        
-        if (row[1] === 'get') {
-            var m = self._match(row[2]);
-            if (!m) return tr.queue(seq + ' 404\n');
-            
-            var out = through(function (buf) {
-                var str = Buffer.isBuffer(buf) ? buf.toString('utf8') : buf;
-                tr.queue(JSON.stringify([ seq, str ]) + '\n');
-            }, end);
-            
-            function end () {
-                tr.queue(JSON.stringify([ seq ]) + '\n');
-            }
-            
-            var rx = m.route.render(m.params);
-            rx.pipe(out);
-            if (m.route.data) m.route.data(m.params).pipe(rx);
-        }
-    }
-};
