@@ -3,7 +3,6 @@ var through = require('through');
 var trumpet = require('trumpet');
 var url = require('url');
 var qs = require('querystring');
-var ent = require('ent');
 var split = require('split');
 var combine = require('stream-combiner');
 
@@ -166,13 +165,13 @@ Tabby.prototype.handle = function (req, res) {
         var hs = tr.createStream('head');
         hs.pipe(through(null, function () {
             this.queue('<meta type="tabby-regex" value="'
-                + ent.encode(self._regexp.source)
+                + encode(self._regexp.source)
                 + '">\n'
             );
             this.queue('<meta type="tabby-live" value="'
-                + JSON.stringify(self._routes.filter(function (x) {
+                + encode(JSON.stringify(self._routes.filter(function (x) {
                     return x.live
-                }))
+                })))
                 + '">\n'
             );
             this.queue(null);
@@ -187,3 +186,9 @@ Tabby.prototype.handle = function (req, res) {
         if (route.data) route.data(params).pipe(rx);
     }
 };
+
+function encode (s) {
+    return s.replace(/["<>]/g, function (c) {
+        return { '"': '&quot;', '<': '&lt;', '>': '&gt;' }[c];
+    });
+}

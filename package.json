@@ -5,7 +5,6 @@
   "main": "index.js",
   "browser": "browser.js",
   "dependencies": {
-    "ent": "~0.1.0",
     "inherits": "~2.0.1",
     "quotemeta": "~0.0.0",
     "split": "~0.2.10",
