@@ -1,9 +1,5 @@
-var quotemeta = require('quotemeta');
 var through = require('through');
 var trumpet = require('trumpet');
-var url = require('url');
-var qs = require('querystring');
-
 var matcher = require('./lib/match.js');
 
 module.exports = Tabby;

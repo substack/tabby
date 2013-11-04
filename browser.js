@@ -2,8 +2,7 @@ var inherits = require('inherits');
 var EventEmitter = require('events').EventEmitter;
 var url = require('url');
 var through = require('through');
-var split = require('split');
-var combine = require('stream-combiner');
+var matcher = require('./lib/match.js');
 
 var canPush = Boolean(window.history.pushState);
 
@@ -18,6 +17,7 @@ function Tabby (element) {
         element = document.querySelector(element);
     }
     self.element = element;
+    self._matcher = matcher();
     
     var mregex = document.querySelector('meta[type=tabby-regex]');
     if (mregex) {
@@ -41,7 +41,8 @@ Tabby.prototype._scan = function (elem) {
     for (var i = 0; i < links.length; i++) (function (link) {
         var href = url.resolve(location.href, link.getAttribute('href'));
         var u = url.parse(href);
-        if (location.host === u.host && self._regex.test(u.pathname)) {
+        if (location.host !== u.host) return;
+        if (self._matcher.test(u.pathname) || self._regex.test(u.pathname)) {
             link.addEventListener('click', function (ev) {
                 ev.preventDefault();
                 
@@ -112,11 +113,7 @@ Tabby.prototype.show = function (href) {
 };
 
 Tabby.prototype.add = function (pattern, route) {
-    if (typeof pattern === 'object') {
-        route = pattern;
-    }
-    else route.pattern = pattern;
-    this._routes.push(route);
+    this._matcher.add(pattern, route);
 };
 
 function get (href, cb) {
