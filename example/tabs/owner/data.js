@@ -15,7 +15,7 @@ module.exports = function (db) {
             cb(null, owner);
             
             // in a non-trivial example you would use an index here
-            cats().pipe(owner.cats);
+            cats({}).pipe(owner.cats);
         });
     };
 };

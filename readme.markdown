@@ -1,8 +1,16 @@
 # tabby
 
-create tabbed webapps with progressive enhancement
+create web sites that span multiple tabs of content
 
-render html first and then upgrade to websockets and pushState where available
+* render plain html first, always
+* if pushState is available, load additional section content dynamically over
+xhr (progressive enhancement)
+* append `.json` to the url of any page to get the json data that was used to
+render it
+* subscribe to live updates
+
+This module *only* handles setting up the glue to pipe together the data feed
+with the rendering logic at routes for presentation.
 
 # example
 
@@ -61,22 +69,13 @@ var server = http.createServer(function (req, res) {
     else ecstatic(req, res);
 });
 server.listen(5000);
-
-var sock = require('shoe')(function (stream) {
-    stream.pipe(tabby.createStream()).pipe(stream);
-});
-sock.install(server, '/sock');
 ```
-
-The websockets at the end aren't strictly necessary. Tabby will just use xhr to
-load content if a stream hasn't been configured.
 
 browser code:
 
 ``` js
 var tabby = require('tabby')('#content');
 var sock = require('shoe')('/sock');
-sock.pipe(tabby.createStream()).pipe(sock);
 ```
 
 Each of the tabby routes has a render function, which returns a stream html.
@@ -176,10 +175,6 @@ Return true if any of the patterns match for the pathname string `url`.
 
 Render all the pages that match for `t.test(req.url)`.
 
-## t.createStream()
-
-Create a realtime data channel to communicate directly with the server.
-
 # browser methods
 
 ``` js
@@ -189,12 +184,6 @@ var tabby = require('tabby')
 ## var t = tabby(target)
 
 Create a new tabby instance `t` bound to the element or query selector `target`.
-
-## t.createStream()
-
-Hook up a request channel directly to the server.
-
-Otherwise xhr is used to fetch content on demand.
 
 # browser events
 

@@ -2,9 +2,14 @@ var mapStream = require('map-stream');
 
 module.exports = function (db) {
     return function (params) {
-        return db.createReadStream({ start: 'cat-', end: 'cat-~' })
-            .pipe(mapStream(write))
-        ;
+        if (params.live) {
+            
+        }
+        else {
+            return db.createReadStream({ start: 'cat-', end: 'cat-~' })
+                .pipe(mapStream(write))
+            ;
+        }
     };
     
     function write (row, cb) {
