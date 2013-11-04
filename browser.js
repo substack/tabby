@@ -19,6 +19,7 @@ function Tabby (element) {
     self.element = element;
     self._matcher = matcher();
     self._current = 0;
+    self._render = {};
     
     var mregex = document.querySelector('meta[type=tabby-regex]');
     if (mregex) {
@@ -75,8 +76,14 @@ Tabby.prototype.show = function (href) {
         if (err) location.href = href;
         
         if (m && m.route.render) {
-            var r = m.route.render();
-            r.appendTo(self.element);
+            var r = self._render[m.route.pattern];
+            if (!r) {
+                r = self._render[m.route.pattern] = m.route.render();
+                if (self.listeners('render').length === 0 && r.appendTo) {
+                    r.appendTo(self.element);
+                }
+                self.emit('render', r, m.route);
+            }
             
             body.split('\n').forEach(function (line) {
                 if (!line.length) return;
@@ -89,7 +96,7 @@ Tabby.prototype.show = function (href) {
         else {
             self.element.innerHTML = body;
         }
-        self.emit('render', self.element);
+        self.emit('update', self.element);
         self._scan(self.element);
         self.element.style.opacity = 1;
     });
