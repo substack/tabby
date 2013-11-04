@@ -28,7 +28,7 @@ function fakeData (db) {
     }, 3000);
 }
 
-module.exports = function (db) {
+module.exports = function (db, opts) {
     fakeData(db);
     
     return function (params) {
@@ -39,7 +39,7 @@ module.exports = function (db) {
             return db.createReadStream({
                 start: 'mews-' + (params.start || ''),
                 end: 'mews-' + (params.end || '~'),
-                limit: 15,
+                limit: parseInt(params.limit) || 15,
                 reverse: true
             });
         }

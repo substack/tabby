@@ -6,7 +6,9 @@ module.exports = function () {
     return hyperspace(html, function (row) {
         return {
             '.message': row.value.message,
-            '.link': '/mews/' + row.key,
+            '.link': {
+                href: '/mews/' + row.key.replace(/^mews-/, '')
+            },
             '.cat': {
                 _text: row.value.cat.name,
                 href: row.value.cat.link
