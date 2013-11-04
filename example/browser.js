@@ -1,12 +1,7 @@
 var tabby = require('../')('#content');
-//var db = require('multilevel').client();
-//var sock = require('shoe')('/sock');
-//sock.pipe(db.createRpcStream()).pipe(sock);
 
 tabby.add('/mews', {
-    data: function () {
-        
-    }
+    render: require('./tabs/mews/render.js')
 });
 
 var section = document.querySelector('#section');

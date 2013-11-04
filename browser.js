@@ -57,6 +57,7 @@ Tabby.prototype._scan = function (elem) {
 Tabby.prototype.show = function (href) {
     var self = this;
     self.element.style.opacity = 0;
+    self.element.innerHTML = '';
     
     var prevented = false;
     self.emit('show', href, {
@@ -64,19 +65,34 @@ Tabby.prototype.show = function (href) {
     });
     if (prevented) return false;
     
+    var m = self._matcher.match(href);
+    var dhref = m && m.route.render ? href + '.json' : href + '.html';
+    
     var cur = ++ self._current;
     
-    get(href + '.html', function (err, body) {
+    get(dhref, function (err, body) {
         if (self._current !== cur) return;
-        
         if (err) location.href = href;
-        self.element.innerHTML = body;
+        
+        if (m && m.route.render) {
+            var r = m.route.render();
+            body.split('\n').forEach(function (line) {
+                if (!line.length) return;
+                try { var row = JSON.parse(line) }
+                catch (e) { return }
+                r.write(row);
+            });
+            r.end();
+            r.appendTo(self.element);
+        }
+        else {
+            self.element.innerHTML = body;
+        }
         self.emit('render', self.element);
         self._scan(self.element);
-        
         self.element.style.opacity = 1;
     });
-    
+     
     return true;
 };
 
