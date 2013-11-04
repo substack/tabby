@@ -29,32 +29,27 @@ var tabby = require('tabby')(function (route, params) {
 });
 
 tabby.add('/', {
-    title: 'home',
     render: function () {
         return fs.createReadStream(__dirname + '/static/home.html');
     }
 });
 
 tabby.add('/cats', {
-    title: 'cats',
     data: require('./data/cat.js')(db),
     render: require('./render/cat.js')
 });
 
 tabby.add('/cats/:name', {
-    title: function (params) { return params.name },
     data: require('./data/cat_full.js')(db),
     render: require('./render/cat_full.js')
 });
 
 tabby.add('/owners', {
-    title: 'owners',
     data: require('./data/owner.js')(db),
     render: require('./render/owner.js')
 });
 
 tabby.add('/owners/:name', {
-    title: function (params) { return params.name },
     data: require('./data/owner_full.js')(db),
     render: require('./render/owner_full.js')
 });

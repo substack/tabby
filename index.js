@@ -61,13 +61,30 @@ Tabby.prototype.add = function (pattern, route) {
         };
     })(route.data);
     
-    for (var i = 0; i < this._routes.length; i++) {
-        if (this._routes[i].pattern.length < route.pattern.length) {
-            this._routes.splice(i, 0, route);
-            break;
+    var parts = pattern.split('/').slice(1);
+    
+    (function (routes) {
+        for (var i = 0; i < routes.length; i++) {
+            var rparts = routes[i].pattern.split('/').slice(1);
+            
+            for (var j = 0; j < parts.length; j++) {
+                var a = /:[\w-]+/.test(parts[j]);
+                var b = /:[\w-]+/.test(rparts[j]);
+                
+                if (!a && b) {
+                    return routes.splice(i, 0, route);
+                }
+                if (!a && !b
+                && (!rparts[j] || parts[j].length < rparts[j].length)) {
+                    return routes.splice(i, 0, route);
+                }
+                if (a && rparts[j] === undefined) {
+                    return routes.splice(i, 0, route);
+                }
+            }
         }
-    }
-    if (i === this._routes.length) this._routes.push(route);
+        if (i === routes.length) routes.push(route);
+    })(this._routes);
     
     this._recreateRegexp();
 };

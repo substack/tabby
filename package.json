@@ -1,6 +1,6 @@
 {
   "name": "tabby",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "create tabbed web apps with progressive enhancement",
   "main": "index.js",
   "browser": "browser.js",
@@ -12,6 +12,12 @@
     "stream-combiner": "~0.0.2",
     "through": "~2.3.4",
     "trumpet": "~1.6.2"
+  },
+  "devDependencies": {
+    "tape": "~2.1.0"
+  },
+  "scripts": {
+    "test": "tape test/*.js"
   },
   "repository": {
     "type": "git",
