@@ -18,6 +18,7 @@ function Tabby (element) {
     }
     self.element = element;
     self._matcher = matcher();
+    self._current = 0;
     
     var mregex = document.querySelector('meta[type=tabby-regex]');
     if (mregex) {
@@ -63,44 +64,11 @@ Tabby.prototype.show = function (href) {
     });
     if (prevented) return false;
     
-    if (self._write) {
-        clearInterval(self._renderInterval);
+    var cur = ++ self._current;
+    
+    get(href + '.html', function (err, body) {
+        if (self._current !== cur) return;
         
-        self._write([ 'get', href ], function (err, stream, seq) {
-            if (err) location.href = href;
-            self._rendering = seq;
-            
-            var body = '', prev;
-            self.element.innerHTML = body;
-            self._renderInterval = setInterval(function () {
-                if (self._rendering !== seq) return;
-                
-                if (prev !== body) {
-                    self.element.innerHTML = body;
-                    prev = body;
-                }
-                self.element.style.opacity = 1;
-            }, 1000);
-            
-            stream.on('data', function (buf) {
-                if (self._rendering !== seq) return;
-                body += buf;
-            });
-            stream.on('end', function () {
-                if (self._rendering !== seq) return;
-                
-                clearInterval(self._renderInterval);
-                if (prev !== body) {
-                    self.element.innerHTML = body;
-                }
-                
-                self.emit('render', self.element);
-                self._scan(self.element);
-                self.element.style.opacity = 1;
-            });
-        });
-    }
-    else get(href + '.html', function (err, body) {
         if (err) location.href = href;
         self.element.innerHTML = body;
         self.emit('render', self.element);
