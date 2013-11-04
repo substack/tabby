@@ -76,6 +76,8 @@ Tabby.prototype.show = function (href) {
         
         if (m && m.route.render) {
             var r = m.route.render();
+            r.appendTo(self.element);
+            
             body.split('\n').forEach(function (line) {
                 if (!line.length) return;
                 try { var row = JSON.parse(line) }
@@ -83,7 +85,6 @@ Tabby.prototype.show = function (href) {
                 r.write(row);
             });
             r.end();
-            r.appendTo(self.element);
         }
         else {
             self.element.innerHTML = body;
