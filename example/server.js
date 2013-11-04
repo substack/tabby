@@ -50,17 +50,6 @@ tabby.add('/mews', {
     live: true
 });
 
-tabby.add('/mews/:key', {
-    data: (function (datafn) {
-        return function (params) {
-            params.start = params.key;
-            params.limit = 1;
-            return datafn(params);
-        };
-    })(require('./tabs/mews/data.js')(db)),
-    render: require('./tabs/mews/render.js'),
-});
-
 var server = http.createServer(function (req, res) {
     if (tabby.test(req)) {
         tabby.handle(req, res);

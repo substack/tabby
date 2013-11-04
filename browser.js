@@ -20,15 +20,11 @@ function Tabby (element) {
     self.element = element;
     
     var mregex = document.querySelector('meta[type=tabby-regex]');
-    var mlive = document.querySelector('meta[type=tabby-live]');
-    
     if (mregex) {
         self._regex = RegExp(mregex.getAttribute('value'));
         self._scan(document.body);
     }
-    if (mlive) {
-        self._live = JSON.parse(mlive.getAttribute('value'));
-    }
+    
     if (canPush) window.addEventListener('popstate', function (ev) {
         if (ev.state && ev.state.href) {
             self.show(ev.state.href);
@@ -115,30 +111,12 @@ Tabby.prototype.show = function (href) {
     return true;
 };
 
-Tabby.prototype.createStream = function () {
-    var tr = through(write);
-    var stream = combine(split(), tr);
-    var streams = {};
-    var seq = 0;
-    this._write = function (row, cb) {
-        tr.queue(JSON.stringify([ seq ].concat(row)) + '\n');
-        streams[seq] = through();
-        cb(null, streams[seq], seq);
-        seq ++;
-    };
-    return stream;
-    
-    function write (line) {
-        try { var row = JSON.parse(line) }
-        catch (err) { return }
-        if (!Array.isArray(row)) return;
-        if (streams[row[0]] && row[1]) {
-            streams[row[0]].queue(row[1]);
-        }
-        else if (streams[row[0]]) {
-            streams[row[0]].queue(null);
-        }
+Tabby.prototype.add = function (pattern, route) {
+    if (typeof pattern === 'object') {
+        route = pattern;
     }
+    else route.pattern = pattern;
+    this._routes.push(route);
 };
 
 function get (href, cb) {

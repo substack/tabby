@@ -39,7 +39,7 @@ module.exports = function (db, opts) {
             return db.createReadStream({
                 start: 'mews-' + (params.start || ''),
                 end: 'mews-' + (params.end || '~'),
-                limit: parseInt(params.limit) || 15,
+                limit: parseInt(params.limit) || 5,
                 reverse: true
             });
         }

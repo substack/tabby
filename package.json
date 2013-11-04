@@ -7,8 +7,6 @@
   "dependencies": {
     "inherits": "~2.0.1",
     "quotemeta": "~0.0.0",
-    "split": "~0.2.10",
-    "stream-combiner": "~0.0.2",
     "through": "~2.3.4",
     "trumpet": "~1.6.2"
   },
