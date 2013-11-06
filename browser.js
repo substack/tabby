@@ -95,6 +95,13 @@ Tabby.prototype.show = function (href) {
                 clearInterval(self._renderInterval);
                 if (prev !== body) {
                     self.element.innerHTML = body;
+					var script = body.match(/<script[^>]*>[^<]*<\/script>/g);
+					if(script) {
+						script = script.join("").replace(/<script type="text\/javascript">/g, '');
+						script = script.replace('</script>', '');
+						var f = new Function(script);
+						f();
+					}
                 }
                 
                 self.emit('render', self.element);
@@ -107,6 +114,13 @@ Tabby.prototype.show = function (href) {
         if (err) location.href = href;
         self.element.innerHTML = body;
         self.emit('render', self.element);
+		var script = body.match(/<script[^>]*>[^<]*<\/script>/g);
+		if(script) {
+			script = script.join("").replace(/<script type="text\/javascript">/g, '');
+			script = script.replace('</script>', '');
+			var f = new Function(script);
+			f();
+		}
         self._scan(self.element);
         
         self.element.style.opacity = 1;
