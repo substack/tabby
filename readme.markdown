@@ -185,15 +185,28 @@ var tabby = require('tabby')
 
 Create a new tabby instance `t` bound to the element or query selector `target`.
 
+## var r = t.add(pattern, route)
+
+Add a route `r` for a `pattern` and `route` like on the server, but `r` emits
+`'render'` and `'update'` events when `pattern` matches.
+
 # browser events
 
 ## t.on('show', function (href) {})
 
-This event fires when a new page has been requested.
+This event fires when a new page has been requested and on the initial page load
+that was rendered server-side.
 
-## t.on('render', function (elem) {})
+## t.on('render', function (renderStream, elem, href) {})
+## r.on('render', function (renderStream, elem, href) {})
 
-This event fires when a new page has been fully rendered.
+This event fires when a new render is created and on the initial page load for
+rendering patterns that match.
+
+## t.on('update', function (elem) {})
+## r.on('update', function (elem) {})
+
+When the page has been completely rendered, this event fires.
 
 # todo
 

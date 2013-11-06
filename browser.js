@@ -115,9 +115,10 @@ Tabby.prototype.add = function (pattern, route) {
             if (route.render) {
                 var rx = route.render();
                 r.emit('render', rx, self.element, href);
-                self.emit('render', route, r, self.element, href);
+                self.emit('render', rx, self.element, href);
             }
             r.emit('update', self.element);
+            self.emit('update', self.element);
         });
     }
     return r;
