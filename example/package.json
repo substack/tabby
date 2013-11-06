@@ -4,5 +4,17 @@
   "scripts": {
     "watch": "watchify browser.js -o static/bundle.js -dv",
     "start": "node server.js"
+  },
+  "main": "server.js",
+  "browser": "browser.js",
+  "dependencies" : {
+    "ecstatic" : "~0.4.12",
+    "duplexer" : "~0.1.1",
+    "level-sublevel" : "",
+    "level" : "",
+    "map-stream" : "",
+    "hyperspace" : "",
+    "level-live-stream" : "",
+    "shoe" : ""
   }
 }
