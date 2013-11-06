@@ -19,7 +19,6 @@ function Tabby (element) {
     self.element = element;
     self._matcher = matcher();
     self._current = 0;
-    self._render = {};
     
     var mregex = document.querySelector('meta[type=tabby-regex]');
     if (mregex) {
@@ -76,14 +75,9 @@ Tabby.prototype.show = function (href) {
         if (err) location.href = href;
         
         if (m && m.route.render) {
-            var r = self._render[m.route.pattern];
-            if (!r) {
-                r = self._render[m.route.pattern] = m.route.render();
-                if (self.listeners('render').length === 0 && r.appendTo) {
-                    r.appendTo(self.element);
-                }
-                self.emit('render', r, m.route);
-            }
+            var r = m.route.render();
+            self.emit('render', m.route, r, self.element, href);
+            m.route._events.emit('render', r, self.element, href);
             
             body.split('\n').forEach(function (line) {
                 if (!line.length) return;
@@ -92,6 +86,8 @@ Tabby.prototype.show = function (href) {
                 r.write(row);
             });
             r.end();
+            
+            m.route._events.emit('update', self.element);
         }
         else {
             self.element.innerHTML = body;
@@ -105,7 +101,7 @@ Tabby.prototype.show = function (href) {
 };
 
 Tabby.prototype.add = function (pattern, route) {
-    this._matcher.add(pattern, route);
+    return this._matcher.add(pattern, route);
 };
 
 function get (href, cb) {

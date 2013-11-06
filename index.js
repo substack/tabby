@@ -11,7 +11,7 @@ function Tabby (containerFn) {
 }
 
 Tabby.prototype.add = function (pattern, route) {
-    this._matcher.add(pattern, route);
+    return this._matcher.add(pattern, route);
 };
 
 Tabby.prototype.test = function (req) {
