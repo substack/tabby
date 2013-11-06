@@ -6,9 +6,6 @@ var mews = tabby.add('/mews', {
 
 mews.on('render', function (r, elem) {
     r.appendTo(elem);
-    r.on('element', function (e) {
-        console.log(e.querySelector('.message'));
-    });
 });
 
 var section = document.querySelector('#section');

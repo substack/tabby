@@ -2,6 +2,7 @@ var inherits = require('inherits');
 var EventEmitter = require('events').EventEmitter;
 var url = require('url');
 var through = require('through');
+var nextTick = require('process').nextTick;
 var matcher = require('./lib/match.js');
 
 var canPush = Boolean(window.history.pushState);
@@ -76,8 +77,8 @@ Tabby.prototype.show = function (href) {
         
         if (m && m.route.render) {
             var r = m.route.render();
-            self.emit('render', m.route, r, self.element, href);
             m.route._events.emit('render', r, self.element, href);
+            self.emit('render', m.route, r, self.element, href);
             
             body.split('\n').forEach(function (line) {
                 if (!line.length) return;
@@ -101,7 +102,25 @@ Tabby.prototype.show = function (href) {
 };
 
 Tabby.prototype.add = function (pattern, route) {
-    return this._matcher.add(pattern, route);
+    var self = this;
+    var r = self._matcher.add(pattern, route);
+    var href = window.location.pathname;
+    
+    if (r.test(href)) {
+        nextTick(function () {
+            self.emit('show', href, {
+                preventDefault: function () {}
+            });
+            
+            if (route.render) {
+                var rx = route.render();
+                r.emit('render', rx, self.element, href);
+                self.emit('render', route, r, self.element, href);
+            }
+            r.emit('update', self.element);
+        });
+    }
+    return r;
 };
 
 function get (href, cb) {
