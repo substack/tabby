@@ -153,16 +153,27 @@ xhr.
 var tabby = require('tabby')
 ```
 
-## var t = tabby(containerFn)
+## var t = tabby(outerFn)
+
+Create a new tabby router.
+
+If given, `outerFn(route, params)` should return a stream that transforms the
+render stream values into the final content to be delivered to the request. You
+can also specify the outer function on a per-route basis by setting
+`route.outer` in `t.add()` below.
 
 ## t.add(pattern, route)
 
 Add a `route` for paths matching `pattern`.
 
-All routes must have a `route.render` function that returns a stream.
+The pipeline for requests for each of `route.data(params)`,
+`route.render(params)`, and `route.outer(params)` is:
 
-Routes can have a `route.data` function that will be piped into the render
-function if given.
+``` js
+data.pipe(render).pipe(outer)
+```
+
+Where only `route.render(params)` is required and the other 2 are optional.
 
 You can put whatever other properties you want onto the route object for use in
 other places in the code.

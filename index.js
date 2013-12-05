@@ -1,6 +1,7 @@
 var through = require('through');
 var trumpet = require('trumpet');
 var matcher = require('./lib/match.js');
+var combine = require('stream-combiner');
 
 module.exports = Tabby;
 
@@ -72,8 +73,9 @@ Tabby.prototype.handle = function (req, res) {
         
         var st = this._containerFn(route, params);
         if (!st) st = through();
+        if (route.outer) st = combine(route.outer(params), st);
         
-        var rx = route.render(params);
+        var rx = (route.render || function () { return through() })(params);
         rx.pipe(st).pipe(tr).pipe(res);
         if (route.data) route.data(params).pipe(rx);
     }
