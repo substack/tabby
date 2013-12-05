@@ -1,20 +1,20 @@
 var test = require('tape');
-var tabby = require('../');
+var matcher = require('../lib/match.js');
 
 test(function (t) {
     t.plan(6);
     
-    var tabs = tabby();
-    tabs.add('/beep', { id: 'A' });
-    tabs.add('/beep/:msg', { id: 'B' });
-    tabs.add('/beep/boop', { id: 'C' });
-    tabs.add('/:name', { id: 'D' });
-    tabs.add('/beep/:msg/def', { id: 'E' });
+    var m = matcher();
+    m.add('/beep', { id: 'A' });
+    m.add('/beep/:msg', { id: 'B' });
+    m.add('/beep/boop', { id: 'C' });
+    m.add('/:name', { id: 'D' });
+    m.add('/beep/:msg/def', { id: 'E' });
     
-    t.equal(tabs._match('/beep').route.id, 'A');
-    t.equal(tabs._match('/beep/xyz').route.id, 'B');
-    t.equal(tabs._match('/beep/boop').route.id, 'C');
-    t.equal(tabs._match('/beep/x').route.id, 'B');
-    t.equal(tabs._match('/eeee').route.id, 'D');
-    t.equal(tabs._match('/beep/qrstuv/def').route.id, 'E');
+    t.equal(m.match('/beep').route.id, 'A');
+    t.equal(m.match('/beep/xyz').route.id, 'B');
+    t.equal(m.match('/beep/boop').route.id, 'C');
+    t.equal(m.match('/beep/x').route.id, 'B');
+    t.equal(m.match('/eeee').route.id, 'D');
+    t.equal(m.match('/beep/qrstuv/def').route.id, 'E');
 });
