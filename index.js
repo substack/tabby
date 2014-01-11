@@ -2,11 +2,15 @@ var through = require('through');
 var trumpet = require('trumpet');
 var matcher = require('./lib/match.js');
 var combine = require('stream-combiner');
+var inherits = require('inherits');
+var EventEmitter = require('events').EventEmitter;
 
+inherits(Tabby, EventEmitter);
 module.exports = Tabby;
 
 function Tabby (containerFn) {
     if (!(this instanceof Tabby)) return new Tabby(containerFn);
+    EventEmitter.call(this);
     this._matcher = matcher();
     this._containerFn = containerFn || function () {};
 }
@@ -34,6 +38,19 @@ Tabby.prototype.handle = function (req, res) {
     var route = m.route, vars = m.vars, ext = m.ext;
     var params = m.params;
     
+    function onerror (err) {
+        err.route = route;
+        err.request = req;
+        err.response = res;
+        
+        if (self.listeners('error').length > 0) {
+            self.emit('error', err, req, res);
+        }
+        else {
+            res.statusCode = 500;
+            res.end(err + '\n');
+        }
+    }
     
     if (ext === '.json') {
         res.setHeader('content-type', 'application/json');
@@ -42,7 +59,9 @@ Tabby.prototype.handle = function (req, res) {
             res.end('no data for this route\n');
             return;
         }
-        route.data(params).pipe(through(function (row) {
+        var r = route.data(params);
+        r.on('error', onerror);
+        r.pipe(through(function (row) {
             if (typeof row === 'string' || Buffer.isBuffer(row)) {
                 this.queue(row);
             }
@@ -55,7 +74,9 @@ Tabby.prototype.handle = function (req, res) {
     else if (ext === '.html') {
         res.setHeader('content-type', 'text/html');
         if (route.data) {
-            route.data(params).pipe(route.render(params)).pipe(res);
+            var r = route.data(params);
+            r.on('error', onerror);
+            r.pipe(route.render(params)).pipe(res);
         }
         else route.render(params).pipe(res);
     }
@@ -77,7 +98,11 @@ Tabby.prototype.handle = function (req, res) {
         
         var rx = (route.render || function () { return through() })(params);
         rx.pipe(st).pipe(tr).pipe(res);
-        if (route.data) route.data(params).pipe(rx);
+        if (route.data) {
+            var r = route.data(params);
+            r.on('error', onerror);
+            r.pipe(rx);
+        }
     }
 };
 
