@@ -201,6 +201,22 @@ Create a new tabby instance `t` bound to the element or query selector `target`.
 Add a route `r` for a `pattern` and `route` like on the server, but `r` emits
 `'render'` and `'update'` events when `pattern` matches.
 
+# server events
+
+## t.on('error', function (err, req, res) {})
+
+When there is an error in a data stream, this event fires. By default a listener
+will catch errors:
+
+```
+function (err, req, res) {
+    res.statusCode = 500;
+    res.end(err + '\n');
+}
+```
+
+If you handle the error yourself you will need to send a response.
+
 # browser events
 
 ## t.on('show', function (href) {})
