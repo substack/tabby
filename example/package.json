@@ -7,5 +7,18 @@
   "scripts": {
     "watch": "watchify browser.js -o static/bundle.js -dv",
     "start": "node server.js"
+  },
+  "dependencies": {
+    "ecstatic": "~0.4.12",
+    "duplexer": "~0.1.1",
+    "level-sublevel": "~5.1.1",
+    "level": "~0.17.0-1",
+    "map-stream": "0.0.3",
+    "hyperspace": "~0.5.0",
+    "level-live-stream": "~1.4.7",
+    "pull-level": "~1.1.9",
+    "pull-stream-to-stream": "~1.2.6",
+    "shoe": "0.0.15",
+    "browserify": "~2.35.0"
   }
 }
